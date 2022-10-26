@@ -129,8 +129,7 @@ Temporal_Proc = [] # Iteration temporal proc
 def Entry_Proccesing(Entry):
     Temporal_Proc = [] 
 
-    #Temporal_Proc 2
-    TP_2 = [] 
+    
 
     Our_Entry = Entry
     #NG - Node Group
@@ -150,30 +149,8 @@ def Entry_Proccesing(Entry):
         # -----------
         
         Temporal_Proc.append(i)
-        print(Temporal_Proc)
+
         
-        
-        if len(Temporal_Proc) != 1: # Checking if it's first letter
-            
-            if Temporal_Proc.index(i) != (len(Temporal_Proc) - 1): #Check for pair node
-                
-                next_i = Temporal_Proc[Temporal_Proc.index(i) + 1]
-                if i ==  next_i:
-                    print(f'We found pair Node! : {i + next_i} ' )
-
-                    TP_2[TP_2.index(i)] = i + next_i 
-
-                    Temporal_Proc.remove(i)
-                    Temporal_Proc.remove(next_i)
-
-            else:
-                TP_2.append(i)
-        else:
-            
-            NG_ROOT = i 
-                   
-        #print(f'NGR : {NG_ROOT}')
-        #print(f'NGT : {NG_TIP}')
 
     Recent_Memory.append(Our_Entry)
 
