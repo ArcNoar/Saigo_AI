@@ -1,9 +1,22 @@
 
+from dataclasses import dataclass
+import numpy as np
+
+import time 
+
+total_charge = 100
+
+total_activations = 229
+
+#start_time = time.time() # TIMER
+
+
+#time.sleep(1.5)
 Node_Base = {
-    'CONSTANT|H' : [0.0],
-    'CONSTANT|E' : [0.0],
-    'CONSTANT|L' : [0.0],
-    'CONSTANT|O' : [0.0],
+    'CONSTANT|H' : [35],
+    'CONSTANT|E' : [83],
+    'CONSTANT|L' : [44],
+    'CONSTANT|O' : [67],
 
     }
 
@@ -31,4 +44,15 @@ H_Link = N_Links['CONSTANT|H']['CONSTANT|E']
 
 N_Links['CONSTANT|H']['CONSTANT|E'] = [1.2,1.2,1.2]
 
-print(N_Links)
+
+
+#Simulation___
+
+
+
+
+
+#print(1**0.9)
+
+
+#print(Node_Base['CONSTANT|H'])
