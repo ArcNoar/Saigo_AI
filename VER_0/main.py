@@ -1,8 +1,7 @@
 
 import pickle # For data saving
 from random import randint
-from socket import NI_NAMEREQD
-import numpy as np
+#import numpy as np
 
 #User_Entry = input()
 
@@ -27,6 +26,7 @@ that's mean it should be higher but not 100%
 conductivity and force are unstable and should be tested in practice
 """
 
+
 # Storage Sector
 
 
@@ -37,7 +37,7 @@ Recent_Memory = []
 
 # Nodes
 Node_Base = {
-    "DATA" : ["Value","Type"],
+    "DATA" : ["Value","Type",'Act_Amount'],
 }
 
 
@@ -50,9 +50,13 @@ Node_A : {
     'Node_B' : [Params],
 }
 """
+
+# Conductivity - amount of charge loss when activating
+# Force - Link preference 
+
 N_Links = {
     "NODE" : {
-        "NODE" : ['Correct Activation','Activation Amount'],
+        "NODE" : ['Conductivity','Force','Activation_Amount'],
     },
     
 }
@@ -88,12 +92,14 @@ def node_generator(Node_Object='Abstract',NCV=1.0): # Creates Node for new data
 
         #Here should be description of what kind of abstraction it
     else:
+        # [Charge,Class,Act_Amount]
+
         if faint_Node == True:
             Node_Class = 0
-            Node_Base[f'{Node_Object}'] = [round(NCV,3),Node_Class] 
+            Node_Base[f'{Node_Object}'] = [round(NCV,3),Node_Class,1] 
         else:
             Node_Class = 1
-            Node_Base[f'{Node_Object}'] = [round(NCV,3),Node_Class] 
+            Node_Base[f'{Node_Object}'] = [round(NCV,3),Node_Class,1] 
         
 
 
@@ -124,27 +130,35 @@ def NL_Formator(Node_A,Node_B,Source='Unknown'):
 
     Root_Node = Node_Base[f'{Node_A}']
     Sup_Node = Node_Base[f'{Node_B}']
-    print(Root_Node[0])
-    print(Sup_Node[0])
+    #print(Root_Node[0])
+    #print(Sup_Node[0])
 
 
     Extension = False
+    Enforcing = False
 
     if Sup_Node[0] < 0.5:
         AFN = True
 
     if Node_A in N_Links.keys():
-        Extension = True
-    
-        
 
-    if Root_Node[1] == 1:
+        local_link = N_Links[f'{Node_A}']
+        if Node_B not in local_link.keys():
+
+            Extension = True
+        else:
+            Enforcing = True
+    
+
+      
+        
+    if Root_Node[1] == 1 and Enforcing != True:
         #Init Params for link
         NLAS += 1
         CNLA = 1 #Current Node link Activations
         if Extension == True:
-            local_link = N_Links[f'{Node_A}']
-            CNLA = len(local_link.keys()) + 1
+            
+            CNLA += len(local_link.keys()) + 1
         
 
         # First time activation so that's why there is 1
@@ -164,7 +178,7 @@ def NL_Formator(Node_A,Node_B,Source='Unknown'):
             Consumed_Energy += (0.50 - Sup_Node[0])
 
         Root_Node[0] -= Consumed_Energy
-        print(Root_Node[0])
+        #print(Root_Node[0])
         if Root_Node[0] < 0.5:
             print('Not enough charge to form link')
             Root_Node[0] += round(Consumed_Energy * 0.9,3) # Returning charge
@@ -188,14 +202,14 @@ def NL_Formator(Node_A,Node_B,Source='Unknown'):
                 Force += OF # OverFlow converts to Force
                 if Extension == False:
                     N_Links[f'{Node_A}'] = {
-                        f"{Node_B}" : [round(Conductivity,3),round(Force,3)]
+                        f"{Node_B}" : [round(Conductivity,3),round(Force,3),CNLA]
                         }
                 else:
                     
-                    print(CNLA)
-                    local_link[f'{Node_B}'] = [round(Conductivity,3),round(Force,3)]
+                    #print(CNLA)
+                    local_link[f'{Node_B}'] = [round(Conductivity,3),round(Force,3),CNLA]
 
-                print(Sup_Node[0])
+                #print(Sup_Node[0])
                 print(f"Link formed Succesfully")
             else:
                 Sup_Node[0] -= Consumed_Energy
@@ -208,12 +222,72 @@ def NL_Formator(Node_A,Node_B,Source='Unknown'):
     elif Root_Node[1] == 2:
         print('We met abstraction')
 
+    elif Enforcing == True:
+        print('We already have that kind of links')
+
     else:
         print("We can't form a link from faint Node")
 
 
 
 
+
+
+def NG_Companator(GN,GNCL,Act_Amount=1,Distribution=0,NGX=0.0,NGY=0.0,NGZ=0.0):
+    """
+    GN = Group Name (Example : Entry - Hello => GN - Hello;) In constant cases
+    GNCL = GN Construct list
+    Act_Amount = Number of Activations (Default = 1 (Init activation))
+    Distribution = Amount of clusters that contain this group (Default = 0 (Initial))
+    NGX = Node_group X Cord (By default it's 0)
+    NGY = Node_group X Cord (By default it's 0)
+    NGZ = Node_group X Cord (By default it's 0)
+    """
+
+    if GN.upper() not in Node_Group.keys():
+
+        Node_Group[f'{GN.upper()}'] = {}
+
+        Initial_Forming = Node_Group[f'{GN.upper()}']
+        
+        for i in range(len(GNCL)):
+            if i != len(GNCL) - 1:
+                Data_Filling = [
+                    [
+                     Node_Base[f'{GNCL[i]}'],
+                     N_Links[f'{GNCL[i]}'][f'{GNCL[i + 1]}']
+                    ],
+                    Distribution,
+                    [
+                        NGX,
+                        NGY,
+                        NGZ
+                    ]
+                ]
+
+            else: # For last element in group
+                print('We are here')
+                Data_Filling = [
+                    [
+                     Node_Base[f'{GNCL[i]}'],
+                     0
+                    ],
+                    Distribution,
+                    [
+                        NGX,
+                        NGY,
+                        NGZ
+                    ]
+                ]
+            if GNCL[i] not in Initial_Forming.keys():
+                Initial_Forming[f'{GNCL[i]}'] = Data_Filling
+            else:
+                Initial_Forming[f'{GNCL[i]}_2'] = Data_Filling
+
+
+        
+
+    
 
 
 
@@ -318,10 +392,11 @@ def Entry_Proccesing(Entry):
     for i in range(len(Temporal_Proc) - 1):
         #print(Temporal_Proc)
         if i != len(Temporal_Proc) - 1:
+            
             NL_Formator(Temporal_Proc[i],Temporal_Proc[i + 1],Source='SV')
 
             
-
+    NG_Companator(Our_Entry,Temporal_Proc)
         
 
 
@@ -333,5 +408,7 @@ Entry_Proccesing('Hello')
 #print(NAS)
 print(f' NB : {Node_Base} \n')
 print(f' N_Links : {N_Links} \n')
+
+print(f'Node_Groups : {Node_Group} \n')
     
 
