@@ -5,7 +5,7 @@ from VER_0.Initial_Construct.NLink_Former import NL_Manager
 from VER_0.Initial_Construct.NG_Companator import NG_Companator
 
 
-class Proc_Manager():
+class Entry_Reciever():
     """
     NCV - Node Charge Val
     RM - Recent Memory
@@ -34,9 +34,9 @@ class Proc_Manager():
         self.NLS = NLS
         self.NGS = NGS
 
-    
 
-    def Entry_Proc(self,Entry):
+
+    def Synapse_Forming(self,Entry):
         
         if Entry not in self.RM: # Check for recent cases
 
@@ -46,10 +46,12 @@ class Proc_Manager():
             NM = Node_Manager(self.NS,self.NCV,Temporal_Proc)
             NM.Node_Proc()
 
+
+            print(self.NS)
             NLM = NL_Manager(Temporal_Proc,self.NS,self.NLS,self.STF,self.AISC,self.NLAS,SRC='SV')
             NLM.Link_Proc()
 
-            
+            print(self.NLS)
             
             NG_Companator(Entry,Temporal_Proc,self.NS,self.NLS,self.NGS)
 

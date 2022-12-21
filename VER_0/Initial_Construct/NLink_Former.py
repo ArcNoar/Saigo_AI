@@ -34,7 +34,8 @@ class NL_Manager():
         
         AFN = False # Activating Faint Node
         #print(self.Node_Base)
-
+        
+        
         Root_Node = self.Node_Base[f'{Node_A}']
         Sup_Node = self.Node_Base[f'{Node_B}']
         #print(Root_Node[0])
@@ -43,6 +44,7 @@ class NL_Manager():
     
         Extension = False
         Enforcing = False
+        
     
         if Sup_Node[0] < 0.5:
             AFN = True
